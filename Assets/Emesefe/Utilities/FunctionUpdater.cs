@@ -14,7 +14,6 @@ namespace Emesefe.Utilities
             private void Update() {
                 if (OnUpdate != null) OnUpdate();
             }
-
         }
         
         private static List<FunctionUpdater> _updaterList; // Holds a reference to all active updaters
@@ -32,7 +31,7 @@ namespace Emesefe.Utilities
             _active = active;
         }
         
-        private static void InitIfNeeded()
+        private static void InitializeIfNeeded()
         {
             if (_initGameObject != null) return;
             
@@ -61,7 +60,7 @@ namespace Emesefe.Utilities
         }
 
         private static FunctionUpdater Create(Func<bool> updateFunc, string functionName, bool active, bool stopAllWithSameName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
 
             if (stopAllWithSameName) {
                 StopAllUpdatersWithName(functionName);
@@ -76,7 +75,7 @@ namespace Emesefe.Utilities
         }
         
         public static void StopUpdaterWithName(string functionName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
             
             for (int i = 0; i < _updaterList.Count; i++)
             {
@@ -88,7 +87,7 @@ namespace Emesefe.Utilities
         }
 
         private static void StopAllUpdatersWithName(string functionName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
             
             for (int i = 0; i < _updaterList.Count; i++)
             {
@@ -100,7 +99,7 @@ namespace Emesefe.Utilities
         }
         
         private static void RemoveUpdater(FunctionUpdater funcUpdater) {
-            InitIfNeeded();
+            InitializeIfNeeded();
             _updaterList.Remove(funcUpdater);
         }
         
