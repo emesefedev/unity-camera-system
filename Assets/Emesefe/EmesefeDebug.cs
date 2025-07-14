@@ -1,5 +1,6 @@
 using UnityEngine;
 using Emesefe.Utilities;
+using System;
 
 namespace Emesefe
 {
@@ -17,6 +18,15 @@ namespace Emesefe
         // Text Popup at the specified world position
         public static void TextPopup(string text, Vector3 position, float popupTime = 1f) {
             Utils.CreateWorldTextTMProPopup(text, position, popupTime);
+        }
+        
+        // Creates a Button in the UI
+        public static UISprite ButtonUI(Vector2 anchoredPosition, string text, Action ClickFunc) {
+            return UISprite.CreateDebugButton(anchoredPosition, text, ClickFunc);
+        }
+
+        public static UISprite ButtonUI(Transform parent, Vector2 anchoredPosition, string text, Action ClickFunc) {
+            return UISprite.CreateDebugButton(parent, anchoredPosition, text, ClickFunc);
         }
 
     }
