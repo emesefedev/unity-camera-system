@@ -11,6 +11,8 @@ namespace Emesefe.Utilities
         private static readonly Color DefaultFontColor = Color.white;
         
         private static readonly Vector3 DefaultPopupVerticalOffset = new Vector3(0, 10f, 0);
+
+        #region World TMPro
         
         // Create Text TMPro in the World
         public static TextMeshPro CreateWorldTextTMPro(string text, Transform parent = null, Vector3 localPosition = default(Vector3), int fontSize = 12, Color? color = null, TextAlignmentOptions textAlignment = TextAlignmentOptions.TopLeft, int sortingOrder = SortingOrderDefault) {
@@ -37,7 +39,11 @@ namespace Emesefe.Utilities
             return textMeshPro;
         }
         
-        // Create a Text TMPro Popup in the World, no parent
+        #endregion
+
+        #region TMPro Popup
+        
+        // Create a Text TMPro Popup in the World, with no parent
         public static void CreateWorldTextTMProPopup(string text, Vector3 localPosition, float popupTime = 1f) {
             CreateWorldTextTMProPopup(null, text, localPosition, DefaultFontSize, DefaultFontColor, 
                 localPosition + DefaultPopupVerticalOffset, popupTime);
@@ -64,6 +70,10 @@ namespace Emesefe.Utilities
             }, "WorldTextTMProPopup");
         }
         
+        #endregion
+
+        #region World Mouse Position
+        
         // Get Mouse Position in World with Z = 0f
         public static Vector3 GetMouseWorldPosition() {
             Vector3 mousePosition = GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
@@ -76,5 +86,7 @@ namespace Emesefe.Utilities
             Vector3 worldPosition = camera.ScreenToWorldPoint(screenPosition);
             return worldPosition;
         }
+        
+        #endregion
     }
 }
