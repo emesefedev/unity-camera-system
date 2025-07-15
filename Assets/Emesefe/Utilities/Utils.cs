@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 namespace Emesefe.Utilities
 {
@@ -12,6 +13,8 @@ namespace Emesefe.Utilities
         private static readonly Color DefaultFontColor = Color.white;
 
         private static readonly Vector3 DefaultPopupVerticalOffset = new Vector3(0, 10f, 0);
+        
+        private static readonly Vector2 DefaultReferenceResolution = new Vector2(1920, 1080);
 
         private static Transform cachedCanvasTransform;
 
@@ -108,14 +111,36 @@ namespace Emesefe.Utilities
         // Get Main Canvas Transform
         public static Transform GetCanvasTransform()
         {
+            Debug.Log("4 - Call GetCanvasTransform");
             if (cachedCanvasTransform != null) return cachedCanvasTransform;
 
-            Canvas canvas = MonoBehaviour.FindObjectOfType<Canvas>();
+            Canvas canvas = Object.FindObjectOfType<Canvas>();
             if (canvas != null)
             {
                 cachedCanvasTransform = canvas.transform;
             }
-
+            else
+            {
+                // Create Canvas
+                GameObject canvasGameObject = new GameObject("Canvas");
+                canvas = canvasGameObject.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                
+                CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                canvasScaler.referenceResolution = DefaultReferenceResolution;
+                
+                canvasGameObject.AddComponent<GraphicRaycaster>();
+                
+                cachedCanvasTransform = canvasGameObject.transform;
+                
+                // Create Event System
+                GameObject eventSystemGameObject = new GameObject("Event System");
+                eventSystemGameObject.AddComponent<EventSystem>();
+                eventSystemGameObject.AddComponent<StandaloneInputModule>();
+                eventSystemGameObject.AddComponent<BaseInput>();
+            }
+            
             return cachedCanvasTransform;
         }
 
@@ -160,7 +185,7 @@ namespace Emesefe.Utilities
         public static TMP_Text DrawTMPTextUI(string textString, Transform parent, Vector2 anchoredPosition, int fontSize,
             TMP_FontAsset font)
         {
-            GameObject textGameObject = new GameObject("TMP_Text", typeof(RectTransform), typeof(Text));
+            GameObject textGameObject = new GameObject("TMP Text", typeof(RectTransform));
 
             Transform textTransform = textGameObject.transform;
             textTransform.SetParent(parent, false);
@@ -171,9 +196,10 @@ namespace Emesefe.Utilities
             textRectTransform.sizeDelta = new Vector2(0, 0);
             textRectTransform.anchoredPosition = anchoredPosition;
 
-            TMP_Text text = textGameObject.GetComponent<TMP_Text>();
+            TextMeshProUGUI text = textGameObject.AddComponent<TextMeshProUGUI>();
             text.text = textString;
             text.overflowMode = TextOverflowModes.Overflow;
+            text.enableWordWrapping = false;
             text.alignment = TextAlignmentOptions.MidlineLeft;
             if (font == null) font = GetDefaultFont();
             text.font = font;

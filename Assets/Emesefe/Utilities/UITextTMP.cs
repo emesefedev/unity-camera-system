@@ -35,10 +35,13 @@ namespace Emesefe.Utilities
             SetupParent(parent, anchoredPosition);
             string tmp = text;
             float textPosition = 0f;
+            
             while (tmp.IndexOf(iconChar) != -1) {
+                // TODO: Understand what this case does
                 string untilTmp = tmp.Substring(0, tmp.IndexOf(iconChar));
                 string iconNumber = tmp.Substring(tmp.IndexOf(iconChar)+1);
                 int indexOfSpaceAfterIconNumber = iconNumber.IndexOf(" ");
+                
                 if (indexOfSpaceAfterIconNumber != -1) {
                     // Still has more space after iconNumber
                     iconNumber = iconNumber.Substring(0, indexOfSpaceAfterIconNumber);
@@ -56,14 +59,16 @@ namespace Emesefe.Utilities
                 Utils.DrawSprite(icon.sprite, _transform, new Vector2(textPosition + icon.size.x / 2f, 0), icon.size);
                 textPosition += icon.size.x;
             }
+            
             if (tmp.Trim() != "") {
                 Utils.DrawTMPTextUI(tmp, _transform, new Vector2(textPosition,0), fontSize, font);
             }
         }
         
         private void SetupParent(Transform parent, Vector2 anchoredPosition) {
-            gameObject = new GameObject("UI_TextComplex", typeof(RectTransform));
+            gameObject = new GameObject("UI Text TMP", typeof(RectTransform));
             _transform = gameObject.transform;
+            
             _rectTransform = gameObject.GetComponent<RectTransform>();
             _rectTransform.SetParent(parent, false);
             _rectTransform.sizeDelta = new Vector2(0, 0);
@@ -76,7 +81,7 @@ namespace Emesefe.Utilities
         public float GetTotalWidth() {
             float textPosition = 0f;
             foreach (Transform trans in _transform) {
-                Text text = trans.GetComponent<Text>();
+                TMP_Text text = trans.GetComponent<TMP_Text>();
                 if (text != null) {
                     textPosition += text.preferredWidth;
                 }
@@ -85,12 +90,13 @@ namespace Emesefe.Utilities
                     textPosition += image.GetComponent<RectTransform>().sizeDelta.x;
                 }
             }
+            Debug.Log($"Total width {textPosition}");
             return textPosition;
         }
         
         public float GetTotalHeight() {
             foreach (Transform trans in _transform) {
-                Text text = trans.GetComponent<Text>();
+                TMP_Text text = trans.GetComponent<TMP_Text>();
                 if (text != null) {
                     return text.preferredHeight;
                 }
@@ -100,7 +106,7 @@ namespace Emesefe.Utilities
         
         public void SetTextColor(Color color) {
             foreach (Transform trans in _transform) {
-                Text text = trans.GetComponent<Text>();
+                TMP_Text text = trans.GetComponent<TMP_Text>();
                 if (text != null) {
                     text.color = color;
                 }

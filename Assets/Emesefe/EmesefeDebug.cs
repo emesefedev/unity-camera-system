@@ -24,6 +24,10 @@ namespace Emesefe
         public static UISprite ButtonUI(Vector2 anchoredPosition, string text, Action ClickFunc) {
             return UISprite.CreateDebugButton(anchoredPosition, text, ClickFunc);
         }
+        
+        public static UISprite ButtonUI(Vector2 anchoredPosition, string text, Action ClickFunc, Color color) {
+            return UISprite.CreateDebugButton(anchoredPosition, text, ClickFunc, color);
+        }
 
         public static UISprite ButtonUI(Transform parent, Vector2 anchoredPosition, string text, Action ClickFunc) {
             return UISprite.CreateDebugButton(parent, anchoredPosition, text, ClickFunc);

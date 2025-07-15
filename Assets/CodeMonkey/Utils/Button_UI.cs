@@ -129,7 +129,6 @@ namespace CodeMonkey.Utils {
                 }
             }
             if (MouseUpdate != null) MouseUpdate();
-
         }
 
         private void Awake() {
