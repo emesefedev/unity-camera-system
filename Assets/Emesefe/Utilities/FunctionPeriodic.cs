@@ -18,43 +18,50 @@ namespace Emesefe.Utilities
         private static List<FunctionPeriodic> funcList; // Holds a reference to all active timers
         private static GameObject initGameObject; // Global game object used for initializing class, is destroyed on scene change
         
-        private GameObject gameObject;
-        private float timer;
-        private float baseTimer;
-        private bool useUnscaledDeltaTime;
-        private string functionName;
-        public Action action;
-        public Func<bool> testDestroy;
-
-
+        private GameObject _gameObject;
+        public Action _action;
+        private float _timer;
+        public Func<bool> _testDestroy;
+        private string _functionName;
+        private bool _useUnscaledDeltaTime;
+        private float _baseTimer;
+        
         private FunctionPeriodic(GameObject gameObject, Action action, float timer, Func<bool> testDestroy, string functionName, bool useUnscaledDeltaTime) {
-            this.gameObject = gameObject;
-            this.action = action;
-            this.timer = timer;
-            this.testDestroy = testDestroy;
-            this.functionName = functionName;
-            this.useUnscaledDeltaTime = useUnscaledDeltaTime;
-            baseTimer = timer;
+            _gameObject = gameObject;
+            _action = action;
+            _timer = timer;
+            _testDestroy = testDestroy;
+            _functionName = functionName;
+            _useUnscaledDeltaTime = useUnscaledDeltaTime;
+            _baseTimer = timer;
         }
         
-        public void DestroySelf() {
-            RemoveTimer(this);
-            if (gameObject != null) {
-                UnityEngine.Object.Destroy(gameObject);
+        private void Update() {
+            if (_useUnscaledDeltaTime) {
+                _timer -= Time.unscaledDeltaTime;
+            } else {
+                _timer -= Time.deltaTime;
+            }
+            if (_timer <= 0) {
+                _action();
+                if (_testDestroy != null && _testDestroy()) {
+                    //Destroy
+                    DestroySelf();
+                } else {
+                    //Repeat
+                    _timer += _baseTimer;
+                }
             }
         }
         
-        public static void RemoveTimer(FunctionPeriodic funcTimer) {
-            InitIfNeeded();
-            funcList.Remove(funcTimer);
-        }
-        
-        private static void InitIfNeeded() {
+        private static void InitializeIfNeeded() {
             if (initGameObject == null) {
                 initGameObject = new GameObject("FunctionPeriodic_Global");
                 funcList = new List<FunctionPeriodic>();
             }
         }
+        
+        #region Create
         
         // Trigger [action] every [timer], execute [testDestroy] after triggering action, destroy if returns true
         public static FunctionPeriodic Create(Action action, Func<bool> testDestroy, float timer) {
@@ -74,7 +81,7 @@ namespace Emesefe.Utilities
         }
 
         public static FunctionPeriodic Create(Action action, Func<bool> testDestroy, float timer, string functionName, bool useUnscaledDeltaTime, bool triggerImmediately, bool stopAllWithSameName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
 
             if (stopAllWithSameName) {
                 StopAllFunc(functionName);
@@ -91,31 +98,27 @@ namespace Emesefe.Utilities
             return functionPeriodic;
         }
         
-        public static void StopAllFunc(string _name) {
-            InitIfNeeded();
+        #endregion
+        
+        public static void StopAllFunc(string functionName) {
+            InitializeIfNeeded();
             for (int i = 0; i < funcList.Count; i++) {
-                if (funcList[i].functionName == _name) {
+                if (funcList[i]._functionName == functionName) {
                     funcList[i].DestroySelf();
                     i--;
                 }
             }
         }
         
-        private void Update() {
-            if (useUnscaledDeltaTime) {
-                timer -= Time.unscaledDeltaTime;
-            } else {
-                timer -= Time.deltaTime;
-            }
-            if (timer <= 0) {
-                action();
-                if (testDestroy != null && testDestroy()) {
-                    //Destroy
-                    DestroySelf();
-                } else {
-                    //Repeat
-                    timer += baseTimer;
-                }
+        public static void RemoveTimer(FunctionPeriodic funcTimer) {
+            InitializeIfNeeded();
+            funcList.Remove(funcTimer);
+        }
+        
+        public void DestroySelf() {
+            RemoveTimer(this);
+            if (_gameObject != null) {
+                UnityEngine.Object.Destroy(_gameObject);
             }
         }
     }

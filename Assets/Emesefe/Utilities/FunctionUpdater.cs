@@ -14,11 +14,10 @@ namespace Emesefe.Utilities
             private void Update() {
                 if (OnUpdate != null) OnUpdate();
             }
-
         }
         
-        private static List<FunctionUpdater> _updaterList; // Holds a reference to all active updaters
-        private static GameObject _initGameObject; // Global game object used for initializing class, is destroyed on scene change
+        private static List<FunctionUpdater> updaterList; // Holds a reference to all active updaters
+        private static GameObject initGameObject; // Global game object used for initializing class, is destroyed on scene change
         
         private readonly GameObject _gameObject;
         private readonly Func<bool> _updateFunc; // Destroy Updater if return true
@@ -32,13 +31,22 @@ namespace Emesefe.Utilities
             _active = active;
         }
         
-        private static void InitIfNeeded()
-        {
-            if (_initGameObject != null) return;
-            
-            _initGameObject = new GameObject("FunctionUpdater Global");
-            _updaterList = new List<FunctionUpdater>();
+        private void Update() {
+            if (!_active) return;
+            if (_updateFunc()) {
+                DestroySelf();
+            }
         }
+        
+        private static void InitializeIfNeeded()
+        {
+            if (initGameObject != null) return;
+            
+            initGameObject = new GameObject("FunctionUpdater Global");
+            updaterList = new List<FunctionUpdater>(); // TODO: If there is a Game Object, updaterList is initialized?
+        }
+
+        #region Create
         
         public static FunctionUpdater Create(Action updateFunc) {
             return Create(() => { updateFunc(); return false; }, "", true, false);
@@ -61,7 +69,7 @@ namespace Emesefe.Utilities
         }
 
         private static FunctionUpdater Create(Func<bool> updateFunc, string functionName, bool active, bool stopAllWithSameName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
 
             if (stopAllWithSameName) {
                 StopAllUpdatersWithName(functionName);
@@ -71,44 +79,39 @@ namespace Emesefe.Utilities
             FunctionUpdater functionUpdater = new FunctionUpdater(gameObject, updateFunc, functionName, active);
             gameObject.GetComponent<MonoBehaviourHook>().OnUpdate = functionUpdater.Update;
 
-            _updaterList.Add(functionUpdater);
+            updaterList.Add(functionUpdater);
             return functionUpdater;
         }
         
+        #endregion
+        
         public static void StopUpdaterWithName(string functionName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
             
-            for (int i = 0; i < _updaterList.Count; i++)
+            for (int i = 0; i < updaterList.Count; i++)
             {
-                if (_updaterList[i]._functionName != functionName) continue;
+                if (updaterList[i]._functionName != functionName) continue;
                 
-                _updaterList[i].DestroySelf();
+                updaterList[i].DestroySelf();
                 return;
             }
         }
 
         private static void StopAllUpdatersWithName(string functionName) {
-            InitIfNeeded();
+            InitializeIfNeeded();
             
-            for (int i = 0; i < _updaterList.Count; i++)
+            for (int i = 0; i < updaterList.Count; i++)
             {
-                if (_updaterList[i]._functionName != functionName) continue;
+                if (updaterList[i]._functionName != functionName) continue;
                 
-                _updaterList[i].DestroySelf();
+                updaterList[i].DestroySelf();
                 i--;
             }
         }
         
         private static void RemoveUpdater(FunctionUpdater funcUpdater) {
-            InitIfNeeded();
-            _updaterList.Remove(funcUpdater);
-        }
-        
-        private void Update() {
-            if (!_active) return;
-            if (_updateFunc()) {
-                DestroySelf();
-            }
+            InitializeIfNeeded();
+            updaterList.Remove(funcUpdater);
         }
         
         private void DestroySelf() {
