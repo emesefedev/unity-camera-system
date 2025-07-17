@@ -90,7 +90,6 @@ namespace Emesefe.Utilities
                     textPosition += image.GetComponent<RectTransform>().sizeDelta.x;
                 }
             }
-            Debug.Log($"Total width {textPosition}");
             return textPosition;
         }
         

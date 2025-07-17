@@ -111,7 +111,6 @@ namespace Emesefe.Utilities
         // Get Main Canvas Transform
         public static Transform GetCanvasTransform()
         {
-            Debug.Log("4 - Call GetCanvasTransform");
             if (cachedCanvasTransform != null) return cachedCanvasTransform;
 
             Canvas canvas = Object.FindObjectOfType<Canvas>();

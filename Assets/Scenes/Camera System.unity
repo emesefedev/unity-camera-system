@@ -154,6 +154,7 @@ MonoBehaviour:
   cameraFollow: {fileID: 519420033}
   player: {fileID: 1797736736}
   player2: {fileID: 2022753897}
+  enabledEdgeScrolling: 0
 --- !u!4 &315127987
 Transform:
   m_ObjectHideFlags: 0
@@ -320,6 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  zoomSpeed: 1
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
